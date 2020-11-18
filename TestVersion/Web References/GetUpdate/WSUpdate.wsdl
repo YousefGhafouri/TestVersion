@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetUpdate">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetUpdateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetUpdateResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateExist">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="version" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateExistResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateExistResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckConnection">
+        <s:complexType />
+      </s:element>
+      <s:element name="CheckConnectionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CheckConnectionResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetUpdateSoapIn">
+    <wsdl:part name="parameters" element="tns:GetUpdate" />
+  </wsdl:message>
+  <wsdl:message name="GetUpdateSoapOut">
+    <wsdl:part name="parameters" element="tns:GetUpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateExistSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateExist" />
+  </wsdl:message>
+  <wsdl:message name="UpdateExistSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateExistResponse" />
+  </wsdl:message>
+  <wsdl:message name="CheckConnectionSoapIn">
+    <wsdl:part name="parameters" element="tns:CheckConnection" />
+  </wsdl:message>
+  <wsdl:message name="CheckConnectionSoapOut">
+    <wsdl:part name="parameters" element="tns:CheckConnectionResponse" />
+  </wsdl:message>
+  <wsdl:portType name="WSUpdateSoap">
+    <wsdl:operation name="GetUpdate">
+      <wsdl:input message="tns:GetUpdateSoapIn" />
+      <wsdl:output message="tns:GetUpdateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateExist">
+      <wsdl:input message="tns:UpdateExistSoapIn" />
+      <wsdl:output message="tns:UpdateExistSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnection">
+      <wsdl:input message="tns:CheckConnectionSoapIn" />
+      <wsdl:output message="tns:CheckConnectionSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WSUpdateSoap" type="tns:WSUpdateSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetUpdate">
+      <soap:operation soapAction="http://tempuri.org/GetUpdate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateExist">
+      <soap:operation soapAction="http://tempuri.org/UpdateExist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnection">
+      <soap:operation soapAction="http://tempuri.org/CheckConnection" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="WSUpdateSoap12" type="tns:WSUpdateSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetUpdate">
+      <soap12:operation soapAction="http://tempuri.org/GetUpdate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateExist">
+      <soap12:operation soapAction="http://tempuri.org/UpdateExist" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CheckConnection">
+      <soap12:operation soapAction="http://tempuri.org/CheckConnection" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WSUpdate">
+    <wsdl:port name="WSUpdateSoap" binding="tns:WSUpdateSoap">
+      <soap:address location="http://localhost/WSUpdate.asmx" />
+    </wsdl:port>
+    <wsdl:port name="WSUpdateSoap12" binding="tns:WSUpdateSoap12">
+      <soap12:address location="http://localhost/WSUpdate.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
