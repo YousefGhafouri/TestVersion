@@ -51,12 +51,13 @@
             // btnManualUpdate
             // 
             this.btnManualUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnManualUpdate.BackColor = System.Drawing.SystemColors.ControlDark;
             this.btnManualUpdate.Location = new System.Drawing.Point(433, 231);
             this.btnManualUpdate.Name = "btnManualUpdate";
             this.btnManualUpdate.Size = new System.Drawing.Size(149, 25);
             this.btnManualUpdate.TabIndex = 1;
             this.btnManualUpdate.Text = "بروزرسانی از طریق فایل";
-            this.btnManualUpdate.UseVisualStyleBackColor = true;
+            this.btnManualUpdate.UseVisualStyleBackColor = false;
             this.btnManualUpdate.Visible = false;
             // 
             // txtLog
