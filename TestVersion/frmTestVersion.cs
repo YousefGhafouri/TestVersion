@@ -14,6 +14,9 @@ using System.Net;
 using System.Diagnostics;
 using System.Configuration;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
+using System.Net.Security;
+using System.IO;
 
 namespace TestVersion
 {
@@ -101,7 +104,7 @@ namespace TestVersion
                             //«نمایش پیغام تکمیل دانلود
                             //به کاربر اعلام می شود که همه کاربران باید از سیستم خارج شوند
                             //درصورت تایید به فرم آپدیتر می رود
-                            if(MessageBox.Show(string.Format("فایل بروزرسانی نرم افزار با موفقیت دانلود شد{0}برای ادامه بروزرسانی ابتدا باید تمامی کاربران از نرم افزار خارج شوند{0}ادامه می دهید ؟",Environment.NewLine),"بروزرسانی نرم افزار",MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes)
+                            if (MessageBox.Show(string.Format("فایل بروزرسانی نرم افزار با موفقیت دانلود شد{0}برای ادامه بروزرسانی ابتدا باید تمامی کاربران از نرم افزار خارج شوند{0}ادامه می دهید ؟", Environment.NewLine), "بروزرسانی نرم افزار", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             {
                                 Process.Start(string.Format("{0}\\Updater.exe", Application.StartupPath));
                                 Application.Exit();
@@ -127,8 +130,15 @@ namespace TestVersion
                 string RemoteUri = ConfigurationManager.AppSettings.Get("VersionDownloadAddress");
                 string DownloadFileName = UpdateFileName;
                 string WebResource = RemoteUri + DownloadFileName;
-                WebClient myWebClient = new WebClient();
-                myWebClient.DownloadFile(WebResource, ZipFilePath);
+
+                //WebClient myWebClient = new WebClient();
+                //myWebClient.Credentials = new NetworkCredential(ConfigurationManager.AppSettings.Get("VersionDownloadUser"),
+                //                                                ConfigurationManager.AppSettings.Get("VersionDownloadPassword"));
+
+                //myWebClient.DownloadFile(WebResource, ZipFilePath);
+                FTPDownload(ZipFilePath, WebResource, ConfigurationManager.AppSettings.Get("VersionDownloadUser"),
+                                                     ConfigurationManager.AppSettings.Get("VersionDownloadPassword"));
+
                 return true;
             }
             catch (Exception ex)
@@ -138,6 +148,66 @@ namespace TestVersion
             }
             return false;
         }
+
+        private NetworkCredential CreateNetworkCredentials(string ftpUserID, string ftpPassword)
+        {
+            return new NetworkCredential(ftpUserID, ftpPassword);
+        }
+
+        private FtpWebRequest CreateFTPRequest(string fullFtpPath)
+        {
+            return (FtpWebRequest)FtpWebRequest.Create(new Uri(fullFtpPath));
+        }
+
+        private void FTPDownload(string path, string fullFtpPath,
+            string ftpUserID, string ftpPassword)
+        {
+            FileStream outputStream;
+            FtpWebRequest ftpWebRequest = GetDownloadFTPWebRequest(path, fullFtpPath, ftpUserID, ftpPassword, out outputStream);
+            System.Net.ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            FtpWebResponse response = (FtpWebResponse)ftpWebRequest.GetResponse();
+            PassFileStreamDataToStream(response, outputStream);
+        }
+
+        private FtpWebRequest GetDownloadFTPWebRequest(string path, string fullFtpPath,
+           string ftpUserID, string ftpPassword, out FileStream fs)
+        {
+            fs = new FileStream(path, FileMode.Create);
+            FtpWebRequest reqFTP = CreateFTPRequest(fullFtpPath);
+            reqFTP.Credentials = CreateNetworkCredentials(ftpUserID, ftpPassword);
+            reqFTP.KeepAlive = false;
+            reqFTP.Method = WebRequestMethods.Ftp.DownloadFile;
+            reqFTP.UseBinary = true;
+            reqFTP.EnableSsl = true;
+            reqFTP.ContentLength = fs.Length;
+            return reqFTP;
+        }
+
+        private void PassFileStreamDataToStream(FtpWebResponse response, FileStream outputStream)
+        {
+            try
+            {
+                Stream ftpStream = response.GetResponseStream();
+                int bufferSize = 2048;
+                int readCount;
+                byte[] buffer = new byte[bufferSize];
+                readCount = ftpStream.Read(buffer, 0, bufferSize);
+                while (readCount > 0)
+                {
+                    outputStream.Write(buffer, 0, readCount);
+                    readCount = ftpStream.Read(buffer, 0, bufferSize);
+                }
+                ftpStream.Close();
+                outputStream.Close();
+                response.Close();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
         #endregion
 
         #region Event
@@ -291,7 +361,7 @@ namespace TestVersion
 
         private void btnUpdateManual_Click(object sender, EventArgs e)
         {
-            frmPrepareUpdate frmPrepareUpdate = new frmPrepareUpdate(UserID, AppVersionCode,UpdatePath);
+            frmPrepareUpdate frmPrepareUpdate = new frmPrepareUpdate(UserID, AppVersionCode, UpdatePath);
             frmPrepareUpdate.ShowDialog();
         }
     }

@@ -65,6 +65,16 @@ namespace Updater.DataAccess
             ExecuteCommand(cmd);
         }
 
+        public void RestoreDatabaseBackup(string databaseName, string backupPath)
+        {
+            SqlCommand cmd = new SqlCommand();
+            cmd.CommandText = "dbo.DatabaseRestore";
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@DatabaseName", databaseName);
+            cmd.Parameters.AddWithValue("@BackupFileName", backupPath);
+            ExecuteCommand(cmd);
+        }
+
         public DataTable MakeDatabaseSingle()
         {
             SqlCommand cmd = new SqlCommand();
