@@ -44,6 +44,9 @@ namespace Updater
 
         bool AutoUpdateStats = false;
         bool AutoUpdateStatsAsync = false;
+
+        bool NewFileCopied = false;
+        bool NewDatabaseAlter = false;
         #endregion
         public frmUpdater()
         {
@@ -172,7 +175,8 @@ namespace Updater
             {
                 try
                 {
-                    fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+                    if (fi.Name != "Updater.exe")
+                        fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
                 }
                 catch
                 {
@@ -209,13 +213,12 @@ namespace Updater
 
         private void frmUpdater_Shown(object sender, EventArgs e)
         {
+            string UpdateDateTime = string.Format("BackupFiles_{0}-{1}", DateTime.Now.ToPersianDate().Replace("/", "-"), DateTime.Now.ToShortTimeString().Replace(":", "-"));
             try
             {
                 btnExit.Enabled = false;
                 sqlConnection = new SqlConnection(TestVersion.Utilities.AppConfig.ConnectionString);
                 SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder(TestVersion.Utilities.AppConfig.ConnectionString);
-                string UpdateDateTime;
-                UpdateDateTime = string.Format("BackupFiles_{0}-{1}", DateTime.Now.ToPersianDate().Replace("/", "-"), DateTime.Now.ToShortTimeString().Replace(":", "-"));
                 string BackupDateTime = string.Format("BackupDatabase_{0}-{1}", DateTime.Now.ToPersianDate().Replace("/", "-"), DateTime.Now.ToShortTimeString().Replace(":", "-"));
                 //string Result = WSUpdate.GetUpdate(UserID, AppVersionCode);
                 string ZipFilePath = string.Format(@"{0}\Update.zip", UpdatePath);
@@ -314,6 +317,7 @@ namespace Updater
                     sqlServerInstance.ConnectionContext.Connect();
                     sqlServerInstance.ConnectionContext.SqlConnectionObject.EnlistTransaction(Transaction.Current);
                     sqlServerInstance.Databases[sqlConnectionStringBuilder.InitialCatalog].ExecuteNonQuery(StructureScript);
+                    NewDatabaseAlter = true;
                 }
                 if (File.Exists(string.Format(@"{0}\Scripts\__Alter.sql", ExtractPath)))
                 {
@@ -330,6 +334,7 @@ namespace Updater
                     sqlServerInstance.ConnectionContext.Connect();
                     sqlServerInstance.ConnectionContext.SqlConnectionObject.EnlistTransaction(Transaction.Current);
                     sqlServerInstance.Databases[sqlConnectionStringBuilder.InitialCatalog].ExecuteNonQuery(AlterScript);
+                    NewDatabaseAlter = true;
 
                 }
                 CreateLog("بروزرسانی بانک اطلاعاتی با موفقیت انجام شد.");
@@ -337,7 +342,7 @@ namespace Updater
                 CreateLog("در حال کپی فایل های جدید.");
                 Copy(string.Format(@"{0}\Dlls", ExtractPath), Application.StartupPath);
                 CreateLog("کپی فایلهای جدید با موفقیت انجام شد.");
-
+                NewFileCopied = true;
 
                 File.Delete(ZipFilePath);
                 File.Delete(string.Format(@"{0}\{1}.Zip", FileBackupPath, UpdateDateTime));
@@ -359,7 +364,7 @@ namespace Updater
                 {
                     SettingKey = "UpdateStatus",
                     SettingValue = "1"
-                }) ;
+                });
                 versionSettingController.SaveList(DataStructure.FormAction.Edit, versionSettingDtos);
 
                 //Start app
@@ -374,6 +379,22 @@ namespace Updater
                     SettingValue = "0"
                 });
                 versionSettingController.SaveList(DataStructure.FormAction.Edit, versionSettingDtos);
+                if (NewDatabaseAlter)
+                {
+                    dataAccess.RestoreDatabaseBackup("", "");
+                    CreateLog("بازیابی فایل پشتیبان با موفقیت انجام شد.");
+
+                }
+                if (NewFileCopied)
+                {
+                    if (!Directory.Exists(string.Format(@"{0}\{1}", FileBackupPath, UpdateDateTime)))
+                        Directory.CreateDirectory(string.Format(@"{0}\{1}", FileBackupPath, UpdateDateTime));
+
+                    ZipFile.ExtractToDirectory(string.Format(@"{0}\{1}.Zip", FileBackupPath, UpdateDateTime), string.Format(@"{0}\{1}", FileBackupPath, UpdateDateTime));
+                    Copy(string.Format(@"{0}\{1}", FileBackupPath, UpdateDateTime), Application.StartupPath);
+                    CreateLog("بازیابی فایل های اصلی برنامه با موفقیت انجام شد.");
+
+                }
             }
             finally
             {

@@ -134,10 +134,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://localhost/WSUpdate.asmx">
+    <WebReferenceUrl Include="https://getupdate.behinafzarco.com/WSUpdate.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\GetUpdate\</RelPath>
-      <UpdateFromURL>http://localhost/WSUpdate.asmx</UpdateFromURL>
+      <UpdateFromURL>https://getupdate.behinafzarco.com/WSUpdate.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="TestVersion_GetUpdate_WSUpdate" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost/WSUpdate.asmx</Value>
+      <Value Profile="(Default)">https://getupdate.behinafzarco.com/WSUpdate.asmx</Value>
     </Setting>
   </Settings>
 </SettingsFile>
